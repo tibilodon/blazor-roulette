@@ -1,0 +1,16 @@
+{
+  "ConnectionStrings": {
+    "DefaultConnection": "YOUR CONNECTION STRING (SQL)"
+  },
+  "GSMTPSettings": {
+    "ApiKey": "your api key from google",
+    "FromMail": "your from email address"
+  },
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning"
+    }
+  },
+  "AllowedHosts": "*"
+}
