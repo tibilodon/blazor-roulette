@@ -8,7 +8,7 @@ using System.Net.Mail;
 
 namespace blazor_with_auth.Services
 {
-    public class EmailSender : IEmailSender<ApplicationUser>
+    public class EmailSender : IEmailSender<AppUser>
     {
 
 
@@ -50,17 +50,17 @@ namespace blazor_with_auth.Services
             smtpClient.Send(GSMTPMessage);
         }
 
-        public Task SendConfirmationLinkAsync(ApplicationUser user, string email,
+        public Task SendConfirmationLinkAsync(AppUser user, string email,
         string confirmationLink) => SendEmailAsync(email, "Confirm your email",
 
              $"Please reset your password by <a href='{confirmationLink}'>clicking here</a>.");
 
 
-        public Task SendPasswordResetLinkAsync(ApplicationUser user, string email,
+        public Task SendPasswordResetLinkAsync(AppUser user, string email,
             string resetLink) => SendEmailAsync(email, "Reset your password",
             $"Please reset your password by <a href='{resetLink}'>clicking here</a>.");
 
-        public Task SendPasswordResetCodeAsync(ApplicationUser user, string email,
+        public Task SendPasswordResetCodeAsync(AppUser user, string email,
             string resetCode) => SendEmailAsync(email, "Reset your password",
             $"Please reset your password using the following code: {resetCode}");
     }

@@ -2,7 +2,10 @@ using blazor_with_auth.Components;
 using blazor_with_auth.Components.Account;
 using blazor_with_auth.Data;
 using blazor_with_auth.Helpers;
+using blazor_with_auth.Repository;
 using blazor_with_auth.Services;
+using blazor_with_auth.Shared.Interfaces;
+using blazor_with_auth.Shared.Services;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -31,13 +34,34 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString, b => b.MigrationsAssembly("blazor_with_auth")));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
+builder.Services.AddIdentityCore<AppUser>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddSignInManager()
     .AddDefaultTokenProviders();
 
-builder.Services.AddSingleton<IEmailSender<ApplicationUser>, EmailSender>();
+//  for account validation, forgot pw, etc.
+builder.Services.AddSingleton<IEmailSender<AppUser>, EmailSender>();
+//  smtp settings
 builder.Services.Configure<GSMTPSettings>(builder.Configuration.GetSection("GSMTPSettings"));
+
+//  add httpclient
+//  add http client
+builder.Services.AddScoped(http => new HttpClient
+{
+    BaseAddress = new Uri(builder.Configuration.GetSection("BaseUri").Value!),
+});
+
+//  add controllers
+builder.Services.AddControllers();
+
+//  beer repo
+builder.Services.AddScoped<IBeerRepository, BeerRepository>();
+
+//  randomizer
+builder.Services.AddScoped<IRandomBeerService, RandomBeerService>();
+
+//  jsinterop
+builder.Services.AddScoped<ICookieService, CookieService>();
 
 
 var app = builder.Build();
@@ -67,5 +91,8 @@ app.MapRazorComponents<App>()
 
 // Add additional endpoints required by the Identity /Account Razor components.
 app.MapAdditionalIdentityEndpoints();
+
+//  use controllers middleware
+app.MapControllers();
 
 app.Run();

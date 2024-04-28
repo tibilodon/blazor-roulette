@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "blazor_with_auth", "blazor_
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "blazor_with_auth.Client", "blazor_with_auth.Client\blazor_with_auth.Client.csproj", "{516D3FC1-379E-487B-81C6-52D197F5E297}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "blazor_with_auth.Shared", "blazor_with_auth.Shared\blazor_with_auth.Shared.csproj", "{3D3DC8E2-B55D-4C33-9617-3B35C405FCDB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "blazor_with_auth.Shared", "blazor_with_auth.Shared\blazor_with_auth.Shared.csproj", "{3D3DC8E2-B55D-4C33-9617-3B35C405FCDB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
