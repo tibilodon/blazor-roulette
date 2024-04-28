@@ -1,0 +1,107 @@
+﻿@rendermode InteractiveAuto
+@inject IRandomBeerService RandomBeer
+@inject IBeerRepository BeerRepository
+
+
+@if (beers.Any(b => b.Amount > 0))
+{
+    <button type="button" @onclick="HandleClick" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+        Give Me a Random Beer!
+    </button>
+}
+else
+{
+    <h1>You are out of beers! Modify the stock or add more</h1>
+}
+
+@if (ShowBackdrop)
+{
+    <div class="modal-backdrop fade show"></div>
+}
+
+<div class="modal @ModalClass" tabindex="-1" role="dialog" style="display:@ModalDisplay align-items:@Align justify-content:@Align">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Your random beer:</h5>
+            </div>
+            <div class="modal-body">
+                @*  <p>Modal body text goes here.</p> *@
+                <h1>@beerName</h1>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" @onclick="InvokeFetchData">done with it</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+
+
+    [Parameter]
+    public List<Beer> beers { get; set; }
+
+    [Parameter]
+    public EventCallback FetchData { get; set; }
+    private async Task InvokeFetchData()
+    {
+        await FetchData.InvokeAsync();
+        randomBeer = null;
+        beerName = null;
+        Close();
+    }
+
+    private Beer randomBeer = null;
+    private string beerName = null;
+
+    //  modal
+    public string ModalDisplay = "none;";
+    public string ModalClass = "";
+    public bool ShowBackdrop = false;
+    public string Align = "";
+
+    public void Open()
+    {
+        ModalDisplay = "flex;";
+        Align = "center;";
+        ModalClass = "Show";
+        ShowBackdrop = true;
+        StateHasChanged();
+    }
+
+    public void Close()
+    {
+        ModalDisplay = "none";
+        ModalClass = "";
+        ShowBackdrop = false;
+        StateHasChanged();
+    }
+
+    async Task HandleClick()
+    {
+        await Randomize();
+        StateHasChanged();
+    }
+
+    async Task Randomize()
+    {
+        randomBeer = await RandomBeer.SelectRandom(beers);
+        if (randomBeer != null)
+        {
+            await BeerRepository.SubtractFromAmount(randomBeer.Id);
+            beerName = randomBeer.Name;
+            Open();
+        }
+        else
+        {
+            return;
+        }
+    }
+
+    async Task Reset()
+    {
+        randomBeer = null;
+        beerName = null;
+    }
+}

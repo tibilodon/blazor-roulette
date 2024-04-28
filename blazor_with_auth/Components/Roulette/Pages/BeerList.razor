@@ -1,0 +1,61 @@
+﻿@rendermode InteractiveServer
+
+@inject IBeerRepository BeerRepository
+
+@if (beers == null)
+{
+    <span>Loading...</span>
+}
+
+
+
+@if (beers != null && beers.Count != 0)
+{
+    <h3>Your beers: </h3>
+    <ul>
+
+        @foreach (var drink in beers)
+        {
+            <li>
+                <strong>@drink.Name</strong>
+                <strong>@drink.Amount</strong>
+                <EditBeer FetchData="@FetchData" Id="@drink.Id" />
+            </li>
+        }
+    </ul>
+    <Randomizer  FetchData="@FetchData" beers="@beers" />
+
+    <br />
+}
+<hr />
+<AddBeer FetchData="@FetchData" />
+
+
+
+@code {
+
+    List<Beer> beers = null;
+
+    public void RefreshState()
+    {
+        StateHasChanged();
+    }
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await FetchData();
+            StateHasChanged();
+        }
+
+    }
+
+    private async Task FetchData()
+    {
+      beers = await BeerRepository.GetAllBeersForUnRegisteredUser();
+
+ 
+
+
+    }
+}

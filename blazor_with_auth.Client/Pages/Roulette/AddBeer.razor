@@ -1,0 +1,38 @@
+﻿@rendermode InteractiveAuto
+@inject IBeerRepository BeerRepository
+@inject NavigationManager NavigationManager
+
+<label>Add new Beer: </label>
+<input @bind="newName" />
+<select @bind="value">
+    @for (int i = 1; i <= 100; i++)
+    {
+        <option value="@i">@i</option>
+    }
+</select>
+<button @onclick="AddNewBeer">submit</button>
+
+@code {
+    [Parameter]
+    public EventCallback FetchData { get; set; }
+
+
+    private async Task InvokeFetchData()
+    {
+        await FetchData.InvokeAsync();
+    }
+
+    string newName = "";
+    int value = 1;
+    async Task AddNewBeer()
+    {
+        if (!string.IsNullOrWhiteSpace(newName))
+        {
+            await BeerRepository.AddBeer(new Beer { Name = newName, Amount = value });
+            newName = string.Empty;
+            await InvokeFetchData();
+        }
+    }
+
+
+}

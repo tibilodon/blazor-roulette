@@ -1,0 +1,52 @@
+﻿@rendermode InteractiveAuto
+@inject ICookieService cookie
+
+@if (unRegisteredAppUser == null)
+{
+    <input @bind="userName" />
+    <button @onclick="AddUnRegisteredUser">Add name</button>
+}
+else
+{
+    <h1>User: @unRegisteredAppUser.Name</h1>
+    <button @onclick="HandleClick">Edit Username</button>
+}
+
+@if (show)
+{
+    <label>@unRegisteredAppUser.Name</label>
+    <input @bind="userName" />
+    <button @onclick="AddUnRegisteredUser">Submit</button>
+}
+
+@code {
+    UnRegisteredAppUser unRegisteredAppUser { get; set; }
+
+    private bool show = false;
+    string userName = "";
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            unRegisteredAppUser = await cookie.GetUnRegisteredAppUser();
+            StateHasChanged();
+        }
+
+    }
+
+    private async Task AddUnRegisteredUser()
+    {
+        if (!string.IsNullOrWhiteSpace(userName))
+        {
+            unRegisteredAppUser = await cookie.SetValue(userName);
+            userName = string.Empty;
+            show = false;
+        }
+    }
+    private void HandleClick()
+    {
+        userName = unRegisteredAppUser.Name;
+        show = !show;
+    }
+}
