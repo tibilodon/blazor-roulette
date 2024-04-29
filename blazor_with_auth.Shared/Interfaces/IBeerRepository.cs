@@ -9,6 +9,7 @@ namespace blazor_with_auth.Shared.Interfaces
         Task<List<Beer>> GetAllBeers();
         //  un-registered user specific
         Task<List<Beer>> GetAllBeersForUnRegisteredUser();
+        Task<List<Beer>> GetAllBeersForRegisteredAppUser(string userId);
         Task<Beer> GetBeerById(int id);
         //  TODO: add identity user specific
         Task<Beer> UpdateBeer(Beer beer);

@@ -7,8 +7,6 @@
     <span>Loading...</span>
 }
 
-
-
 @if (beers != null && beers.Count != 0)
 {
     <h3>Your beers: </h3>
@@ -36,10 +34,6 @@
 
     List<Beer> beers = null;
 
-    public void RefreshState()
-    {
-        StateHasChanged();
-    }
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -53,9 +47,5 @@
     private async Task FetchData()
     {
       beers = await BeerRepository.GetAllBeersForUnRegisteredUser();
-
- 
-
-
     }
 }

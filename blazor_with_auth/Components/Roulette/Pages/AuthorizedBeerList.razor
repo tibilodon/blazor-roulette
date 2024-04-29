@@ -1,0 +1,66 @@
+﻿@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Identity
+@using System.Security.Claims
+@using blazor_with_auth.Components.Account
+@using blazor_with_auth.Data
+@rendermode InteractiveServer
+
+@inject IBeerRepository BeerRepository
+@inject UserManager<AppUser> UserManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+@if (beers == null)
+{
+    <span>Loading...</span>
+}
+
+<h1>Hello user with id: @userId</h1>
+
+@if (beers != null && beers.Count != 0)
+{
+    <h3>Your beers: </h3>
+    <ul>
+
+        @foreach (var drink in beers)
+        {
+            <li>
+                <strong>@drink.Name</strong>
+                <strong>@drink.Amount</strong>
+                <EditBeer FetchData="@FetchData" Id="@drink.Id" />
+            </li>
+        }
+    </ul>
+    <Randomizer FetchData="@FetchData" beers="@beers" />
+
+    <br />
+}
+<hr />
+<AddBeer userId="@userId" FetchData="@FetchData" />
+
+@code {
+
+    List<Beer> beers = null;
+
+    private AppUser user = default!;
+
+    public string? userId { get; set; }
+   
+    [CascadingParameter]
+    private Task<AuthenticationState>? authenticationState { get; set; }
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await FetchData();
+            StateHasChanged();
+        }
+    }
+
+    private async Task FetchData()
+    {
+        var authState = await authenticationState;
+        var user = authState.User;
+        userId = UserManager.GetUserId(user);
+        beers = await BeerRepository.GetAllBeersForRegisteredAppUser(userId);
+    }
+}

@@ -57,6 +57,12 @@ namespace blazor_with_auth.Repository
             return await _context.Beers.ToListAsync();
         }
 
+        public async Task<List<Beer>> GetAllBeersForRegisteredAppUser(string userId)
+        {
+            var result = _context.Beers.Where(b => b.AppUserId == userId).ToList();
+            return result;
+        }
+
         public async Task<List<Beer>> GetAllBeersForUnRegisteredUser()
         {
             var unregisteredUser = await _cookie.GetUnRegisteredAppUser();
@@ -70,17 +76,7 @@ namespace blazor_with_auth.Repository
 
         public async Task<Beer> GetBeerById(int id)
         {
-            ////  check user role
-            //var curUser = await _cookie.GetUnRegisteredAppUser();
-            //if (curUser != null)
-            //{
-            //    return await _context.Beers.FirstOrDefaultAsync(b => b.UnRegisteredAppUserId == curUser.Id && b.Id == id);
-            //}
-            ////TODO: add relation with users in other roles
-            //else
-            //{
             return await _context.Beers.FindAsync(id);
-            //}
         }
 
         public async Task<bool> Save()

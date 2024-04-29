@@ -29,6 +29,11 @@ namespace blazor_with_auth.Client.Repository
             throw new NotImplementedException();
         }
 
+        public Task<List<Beer>> GetAllBeersForRegisteredAppUser(string userId)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task<List<Beer>> GetAllBeersForUnRegisteredUser()
         {
             throw new NotImplementedException();
@@ -57,6 +62,6 @@ namespace blazor_with_auth.Client.Repository
             return await result.Content.ReadFromJsonAsync<Beer>();
         }
 
-       
+
     }
 }
