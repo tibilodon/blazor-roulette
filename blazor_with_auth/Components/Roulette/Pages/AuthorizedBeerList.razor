@@ -41,9 +41,10 @@
 
     List<Beer> beers = null;
 
-    private AppUser user = default!;
+    // private AppUser user = default!;
 
     public string? userId { get; set; }
+    public string? userName { get; set; }
    
     [CascadingParameter]
     private Task<AuthenticationState>? authenticationState { get; set; }

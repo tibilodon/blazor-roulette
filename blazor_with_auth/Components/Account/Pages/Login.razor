@@ -6,6 +6,7 @@
 @using blazor_with_auth.Data
 
 @inject SignInManager<AppUser> SignInManager
+@inject UserManager<AppUser> UserManager
 @inject ILogger<Login> Logger
 @inject NavigationManager NavigationManager
 @inject IdentityRedirectManager RedirectManager
@@ -85,11 +86,18 @@
         }
     }
 
+    // public string? username { get; set; }
+
     public async Task LoginUser()
     {
         // This doesn't count login failures towards account lockout
         // To enable password failures to trigger account lockout, set lockoutOnFailure: true
-        var result = await SignInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: false);
+
+        //  find username
+        var signedUser = await UserManager.FindByEmailAsync(Input.Email);
+
+        //  this way user gets logged in using their emaill address and password
+        var result = await SignInManager.PasswordSignInAsync(signedUser.UserName, Input.Password, Input.RememberMe, lockoutOnFailure: false);
         if (result.Succeeded)
         {
             Logger.LogInformation("User logged in.");

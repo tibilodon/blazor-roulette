@@ -21,23 +21,29 @@
             <DataAnnotationsValidator />
             <ValidationSummary class="text-danger" role="alert" />
             <div class="form-floating mb-3">
-                <input type="text" value="@username" class="form-control" placeholder="Please choose your username." disabled />
-                <label for="username" class="form-label">Username</label>
+                <InputText @bind-Value="Input.UserName" class="form-control" placeholder="Please enter your user name." />
+                <label for="userName" class="form-label">Username</label>
+             @*    @if (errorMessage!=null)
+                { *@
+                    <ValidationMessage For="() => Input.UserName" class="text-danger"/>
+
+                @* } *@
+
             </div>
-            <div class="form-floating mb-3">
+         @*    <div class="form-floating mb-3">
                 <InputText @bind-Value="Input.PhoneNumber" class="form-control" placeholder="Please enter your phone number." />
                 <label for="phone-number" class="form-label">Phone number</label>
                 <ValidationMessage For="() => Input.PhoneNumber" class="text-danger" />
-            </div>
+            </div> *@
             <button type="submit" class="w-100 btn btn-lg btn-primary">Save</button>
         </EditForm>
     </div>
 </div>
 
-@code {
+    @code {
     private AppUser user = default!;
-    private string? username;
-    private string? phoneNumber;
+    private string? userName;
+    // private string? phoneNumber;
 
     [CascadingParameter]
     private HttpContext HttpContext { get; set; } = default!;
@@ -48,20 +54,41 @@
     protected override async Task OnInitializedAsync()
     {
         user = await UserAccessor.GetRequiredUserAsync(HttpContext);
-        username = await UserManager.GetUserNameAsync(user);
-        phoneNumber = await UserManager.GetPhoneNumberAsync(user);
+        userName = await UserManager.GetUserNameAsync(user);
+        // phoneNumber = await UserManager.GetPhoneNumberAsync(user);
 
-        Input.PhoneNumber ??= phoneNumber;
+        // Input.PhoneNumber ??= phoneNumber;
+        Input.UserName ??= userName;
+
     }
+
+    private string? errorMessage { get; set; } = null;
 
     private async Task OnValidSubmitAsync()
     {
-        if (Input.PhoneNumber != phoneNumber)
+        // if (Input.PhoneNumber != phoneNumber)
+        // {
+        //     var setPhoneResult = await UserManager.SetPhoneNumberAsync(user, Input.PhoneNumber);
+
+        //     if (!setPhoneResult.Succeeded)
+        //     {
+        //         RedirectManager.RedirectToCurrentPageWithStatus("Error: Failed to set phone number.", HttpContext);
+        //     }
+
+        // }
+
+        if (Input.UserName != userName)
         {
-            var setPhoneResult = await UserManager.SetPhoneNumberAsync(user, Input.PhoneNumber);
-            if (!setPhoneResult.Succeeded)
+            // bool isValid = string.IsNullOrWhiteSpace(Input.UserName);
+            // if (!isValid)
+            // {
+            //     errorMessage = "Cannot contain white spaces";
+            // }
+            var setUsername = await UserManager.SetUserNameAsync(user, Input.UserName);
+            
+            if (!setUsername.Succeeded)
             {
-                RedirectManager.RedirectToCurrentPageWithStatus("Error: Failed to set phone number.", HttpContext);
+                RedirectManager.RedirectToCurrentPageWithStatus("Error: Failed to set userName.", HttpContext);
             }
         }
 
@@ -71,8 +98,42 @@
 
     private sealed class InputModel
     {
-        [Phone]
-        [Display(Name = "Phone number")]
-        public string? PhoneNumber { get; set; }
+        // // [Display(Name = "Your contact number :")]
+        // [Required(ErrorMessage = "A phone number is required.")]
+        // // [DataType(DataType.PhoneNumber, ErrorMessage = "Invalid Phone Number")]
+        // // [RegularExpression(@"^([0-9]{10})$", ErrorMessage = "Invalid Phone Number.")]
+        // [Display(Name = "Phone number")]
+        // public string? PhoneNumber { get; set; }
+      
+        
+
+        [Display(Name = "UserName")]
+        [RegularExpression(@"^\S+$", ErrorMessage = "Username field cannot contain white spaces.")]
+        public string? UserName { get; set; }
     }
+
+    public sealed class WhiteSpaceValidationAttribute : ValidationAttribute
+    {
+        public WhiteSpaceValidationAttribute()
+        {
+            ErrorMessage = "The {0} field cannot contain only white spaces.";
+        }
+
+        public override bool IsValid(object? value)
+        {
+            if (value == null)
+            {
+                return true;
+            }
+
+            if (!(value is string valueAsString))
+            {
+                return false;
+            }
+
+            return !string.IsNullOrWhiteSpace(valueAsString);
+        }
+    }
+
+  
 }
